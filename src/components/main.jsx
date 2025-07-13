@@ -6,6 +6,7 @@ import { getRecipeFromMistral } from '../ai';
 export default function Main() {
   const [ingredients, setIngredients] = React.useState([]);
   const [recipe, setRecipe] = React.useState('');
+  const [alertShown, setAlertShown] = React.useState(false);
 
   async function getRecipe() {
     const recipeMarkdown = await getRecipeFromMistral(ingredients);
@@ -16,10 +17,18 @@ export default function Main() {
     e.preventDefault();
     const formData = new FormData(e.target);
     const newIngredient = formData.get('ingredient');
+
     if (newIngredient.trim() !== '') {
       setIngredients((prevIngredients) => [...prevIngredients, newIngredient]);
     }
     e.target.reset();
+  }
+
+  function handleInputFocus() {
+    if (!alertShown) {
+      alert('Please enter minimum of 4 ingredients.');
+      setAlertShown(true);
+    }
   }
 
   return (
@@ -30,6 +39,7 @@ export default function Main() {
           placeholder="e.g. oregano"
           aria-label="Add ingredient"
           name="ingredient"
+          onFocus={handleInputFocus}
         />
         <button type="submit">Add ingredient</button>
       </form>
